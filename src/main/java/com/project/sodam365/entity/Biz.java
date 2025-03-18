@@ -23,6 +23,9 @@ public class Biz extends BaseTimeEntity{
     @Column(length = 50)
     private String img;
 
+    @Column(length = 20)
+    private String b_price;
+
     @Column(length = 100, nullable = false)
     private String b_link;
 

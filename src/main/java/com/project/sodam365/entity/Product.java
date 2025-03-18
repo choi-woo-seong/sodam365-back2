@@ -1,15 +1,19 @@
 package com.project.sodam365.entity;
 
+import com.project.sodam365.entity.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "product")
 @Getter
 @Setter
-public class Product extends BaseTimeEntity{
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class Product extends BaseTimeEntity { // ✅ `BaseTimeEntity`에서 상속받아야 `createdAt`이 존재
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long no;
@@ -20,17 +24,13 @@ public class Product extends BaseTimeEntity{
     @Column(length = 50, nullable = false)
     private String p_contents;
 
-    @Column(length = 50)
-    private String img;
-
     @Column(length = 100, nullable = false)
     private String p_link;
 
-    @ManyToOne
-    @JoinColumn(name = "n_userid", nullable = false)
-    private Nuser n_user;
+    @Column(nullable = false)
+    private String p_price;
 
     @ManyToOne
-    @JoinColumn(name = "userid", nullable = false)
-    private User userid;
+    @JoinColumn(name = "userid", referencedColumnName = "userid", nullable = false)
+    private User user;
 }

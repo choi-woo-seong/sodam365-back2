@@ -4,17 +4,24 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.util.Base64;
 import java.util.Date;
 
 @Component
 public class JwtUtil {
-    private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private static final long EXPIRATION_TIME = 3600000; // 1시간
 
-    // 🔹 JWT 생성
+    private final SecretKey SECRET_KEY;
+    private final long EXPIRATION_TIME;
+
+    public JwtUtil(@Value("${jwt.secret}") String secret, @Value("${jwt.expiration}") long expiration) {
+        this.SECRET_KEY = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secret));
+        this.EXPIRATION_TIME = expiration;
+    }
+
     public String generateToken(String id, String role) {
         return Jwts.builder()
                 .setSubject(id)
@@ -25,7 +32,6 @@ public class JwtUtil {
                 .compact();
     }
 
-    // 🔹 JWT 검증
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
@@ -38,7 +44,6 @@ public class JwtUtil {
         }
     }
 
-    // 🔹 JWT에서 클레임 추출
     public Claims getClaimsFromToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(SECRET_KEY)
@@ -46,4 +51,16 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
+    // 🔹 JWT에서 `userid` 추출
+    public String extractUsername(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.getSubject(); // ✅ 토큰의 Subject에서 `userid` 반환
+    }
+
 }

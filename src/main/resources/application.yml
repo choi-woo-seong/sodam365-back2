@@ -27,3 +27,6 @@ spring:
     servlet:
       session:
         timeout: 5s
+jwt:
+  secret: mysupersecretkeymysupersecretkeymysupersecretkey
+  expiration: 3600000

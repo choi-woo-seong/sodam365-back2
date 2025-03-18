@@ -3,6 +3,7 @@ package com.project.sodam365.config;
 import com.project.sodam365.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -36,6 +37,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 🔥 세션 사용 안 함 (JWT 기반 인증)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll() // 🔥 로그인 & 회원가입 엔드포인트는 인증 없이 접근 가능
+                        .requestMatchers("/api/products/searchAll").permitAll() // ✅ 상품 조회 API 허용
+                        .requestMatchers(HttpMethod.POST, "/api/products").authenticated() // 상품 등록은 인증 필요
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // 🔥 JWT 필터 적용
