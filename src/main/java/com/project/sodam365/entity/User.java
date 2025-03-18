@@ -60,7 +60,7 @@ public class User extends BaseTimeEntity {
             this.userid = UUID.randomUUID().toString();
         }
     }
-
+//    test
     // 비밀번호 설정 (암호화 적용)
     public void encodePassword(String encodedPassword) {
         this.password = encodedPassword;
