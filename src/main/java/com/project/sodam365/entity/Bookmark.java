@@ -15,7 +15,7 @@ public class Bookmark extends BaseTimeEntity{
     private Long no;
 
     @Column(length = 500, nullable = false)
-    private String b_contents;
+    private String title;
 
     @Column(length = 100, nullable = false)
     private String link;

@@ -17,6 +17,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "FROM Product p JOIN p.user u ORDER BY p.no")
     List<ProductDto> findAllProductsWithUsername();
     Optional<Product> findByNo(Long no);
+    List<Product> findTop3ByOrderByNoDesc(); // ✅ 최근 3개 조회 (no 내림차순)
+
 
 
 }

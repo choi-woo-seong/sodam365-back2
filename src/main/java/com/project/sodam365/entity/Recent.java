@@ -1,31 +1,28 @@
 package com.project.sodam365.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 
 @Entity
 @Table(name = "recent")
 @Getter
 @Setter
-public class Recent extends BaseTimeEntity{
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class Recent extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long r_no;
 
-    @Column(length = 30, nullable = false)
-    private String r_title;
+    private Long postNo; // ✅ 최근 본 글의 번호
+    private String category; // ✅ 최근 본 글의 카테고리
+    private String title; // ✅ 최근 본 글 제목
+    private String userid; // ✅ 최근 본 글을 본 사용자 ID
+    private String nuserid;// 최근 본 글을 본 일반사용자 ID
 
-    @Column(length = 50)
-    private String img;
-
-    @ManyToOne
-    @JoinColumn(name = "n_userid", nullable = false)
-    private Nuser n_user;
-
-    @ManyToOne
-    @JoinColumn(name = "userid", nullable = false)
-    private User userid;
-
+    private LocalDateTime viewedAt; // ✅ 최근 본 시간
 }

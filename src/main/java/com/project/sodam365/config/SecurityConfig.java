@@ -44,6 +44,13 @@ public class SecurityConfig {
                         .requestMatchers("/api/products/productDetail/**").permitAll() //상품조회
                         .requestMatchers("/api/products/productUpdate/**").authenticated() //상품수정 인증필요
                         .requestMatchers(HttpMethod.DELETE, "/api/products/productDelete/**").authenticated() // ✅ 상품 삭제도 인증 필요
+                        .requestMatchers(HttpMethod.POST, "/api/biz").authenticated() // 상품 등록은 인증 필요
+                        .requestMatchers("/api/biz/searchAll").permitAll() //비즈니스 전체 조회
+                        .requestMatchers("/api/biz/businessDetail/**").permitAll() //특정 비즈니스 조회
+                        .requestMatchers("/api/community/searchAll").permitAll() //비즈니스 전체 조회
+                        .requestMatchers("/api/community/communityDetail/**").permitAll() //비즈니스 특정 조회
+                        .requestMatchers("/community/create", "/community/update/**", "/community/delete/**").authenticated() // 🔐 인증 필요
+
 
                         .anyRequest().authenticated()
                 )
