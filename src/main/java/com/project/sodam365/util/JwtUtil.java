@@ -52,15 +52,18 @@ public class JwtUtil {
                 .getBody();
     }
 
-    // 🔹 JWT에서 `userid` 추출
+    // 🔹 JWT에서 `userid` 추출 (Bearer 자동 제거)
     public String extractUsername(String token) {
-        Claims claims = Jwts.parserBuilder()
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7); // "Bearer " 제거
+        }
+
+        return Jwts.parserBuilder()
                 .setSigningKey(SECRET_KEY)
                 .build()
                 .parseClaimsJws(token)
-                .getBody();
-
-        return claims.getSubject(); // ✅ 토큰의 Subject에서 `userid` 반환
+                .getBody()
+                .getSubject(); // ✅ 토큰의 Subject에서 `userid` 반환
     }
-
 }
+

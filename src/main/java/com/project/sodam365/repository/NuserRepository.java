@@ -12,5 +12,7 @@ import java.util.Optional;
 public interface NuserRepository extends JpaRepository<Nuser, String> {
     @Query("SELECT n FROM Nuser n WHERE n.nUserid = :nUserid")
     Optional<Nuser> findByNUserid(@Param("nUserid") String nUserid);
+    boolean existsBynUserid(String nUserid);  // ✅ 필드명과 정확히 일치해야 함!
+
 }
 

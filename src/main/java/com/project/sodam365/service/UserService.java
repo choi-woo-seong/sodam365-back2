@@ -81,4 +81,10 @@ public class UserService {
     public boolean existsById(String userid) {
         return userRepository.existsById(userid);
     }
+
+
+    // 비즈니스 회원 아이디 중복 확인
+    public boolean isUserIdDuplicate(String userid) {
+        return userRepository.existsByUserid(userid);
+    }
 }

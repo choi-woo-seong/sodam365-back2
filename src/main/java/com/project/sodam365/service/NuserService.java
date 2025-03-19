@@ -57,6 +57,12 @@ public class NuserService {
         nuserRepository.save(user);
     }
 
+    // 일반 회원 아이디 중복 확인
+    public boolean isNUserIdDuplicate(String nUserid) {
+        return nuserRepository.existsBynUserid(nUserid);
+    }
+
+
     // 🔹 아이디 존재 여부 확인
     public boolean existsById(String nUserid) {
         return nuserRepository.existsById(nUserid);

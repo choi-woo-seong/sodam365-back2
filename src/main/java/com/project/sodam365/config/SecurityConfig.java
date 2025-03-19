@@ -39,6 +39,12 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll() // 🔥 로그인 & 회원가입 엔드포인트는 인증 없이 접근 가능
                         .requestMatchers("/api/products/searchAll").permitAll() // ✅ 상품 조회 API 허용
                         .requestMatchers(HttpMethod.POST, "/api/products").authenticated() // 상품 등록은 인증 필요
+                        .requestMatchers("/api/users/check-duplicate2").permitAll() // ✅ 중복 확인 API 허용
+                        .requestMatchers("/api/users/check-duplicate").permitAll() // ✅ 중복 확인 API 허용
+                        .requestMatchers("/api/products/productDetail/**").permitAll() //상품조회
+                        .requestMatchers("/api/products/productUpdate/**").authenticated() //상품수정 인증필요
+                        .requestMatchers(HttpMethod.DELETE, "/api/products/productDelete/**").authenticated() // ✅ 상품 삭제도 인증 필요
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // 🔥 JWT 필터 적용

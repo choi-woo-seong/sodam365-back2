@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
@@ -15,5 +16,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "p.no, p.p_title, p.p_contents, p.p_price, p.p_link, p.createdAt, u.name, u.userid) " +
             "FROM Product p JOIN p.user u ORDER BY p.no")
     List<ProductDto> findAllProductsWithUsername();
+    Optional<Product> findByNo(Long no);
+
 
 }
