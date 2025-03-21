@@ -14,7 +14,8 @@ public class AnswerController {
     private final AnswerService answerService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody AnswerDto dto, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> create(@RequestBody AnswerDto dto,
+                                    @RequestHeader("Authorization") String token) {
         return ResponseEntity.ok(answerService.createAnswer(dto, token));
     }
 
@@ -26,6 +27,11 @@ public class AnswerController {
     @GetMapping("/answerDetail/{id}")
     public ResponseEntity<?> getOne(@PathVariable Long id) {
         return ResponseEntity.ok(answerService.getAnswerById(id));
+    }
+
+    @GetMapping("/byQuestion/{questionId}")
+    public ResponseEntity<?> getByQuestion(@PathVariable Long questionId) {
+        return ResponseEntity.ok(answerService.getAnswerByQuestionId(questionId));
     }
 
     @PutMapping("/update/{id}")
@@ -41,6 +47,4 @@ public class AnswerController {
         answerService.deleteAnswer(id, token);
         return ResponseEntity.ok().build();
     }
-
-
 }

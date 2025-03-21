@@ -15,4 +15,15 @@ public class NoticeDto {
     private String n_content;       // 공지 내용
     private String user;            // 작성자 (admin)
     private LocalDateTime createdAt; // 작성일
+
+    public static NoticeDto fromEntity(com.project.sodam365.entity.Notice notice) {
+        return new NoticeDto(
+                notice.getId(),
+                notice.getN_title(),
+                notice.getN_content(),
+                notice.getUser(),
+                notice.getCreatedAt()
+        );
+    }
+
 }

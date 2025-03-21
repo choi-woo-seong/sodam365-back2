@@ -20,13 +20,19 @@ public class Question extends BaseTimeEntity {
     @Column(nullable = false, length = 1000)
     private String content;
 
+    @Column(nullable = false, length = 50)
+    private String writer; // 🔥 작성자 ID
+
+    @Column(length = 50)
+    private String writerName;
+
     @ManyToOne
     @JoinColumn(name = "userid")
-    private User user; // 사업자
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "n_userid")
-    private Nuser nuser; // 일반 사용자
+    private Nuser nuser;
 
     @JsonIgnore
     @OneToOne(mappedBy = "question", cascade = CascadeType.ALL)
@@ -35,3 +41,4 @@ public class Question extends BaseTimeEntity {
     @Column(nullable = false)
     private boolean isAnswered = false;
 }
+

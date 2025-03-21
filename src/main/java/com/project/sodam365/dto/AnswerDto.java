@@ -1,27 +1,28 @@
 package com.project.sodam365.dto;
 
 import com.project.sodam365.entity.Answer;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class AnswerDto {
     private Long id;
-    private String content;
+    private String a_title;
+    private String a_contents;
+    private String answer;
     private Long questionId;
-    private String adminId;
 
     public static AnswerDto fromEntity(Answer answer) {
-        return new AnswerDto(
-                answer.getId(),
-                answer.getContent(),
-                answer.getQuestion().getId(),
-                answer.getAdminId()
-        );
+        return AnswerDto.builder()
+                .id(answer.getId())
+                .a_title(answer.getA_title())
+                .a_contents(answer.getA_contents())
+                .answer(answer.getAnswer())
+                .questionId(answer.getQuestion().getId())
+                .build();
     }
 }
+

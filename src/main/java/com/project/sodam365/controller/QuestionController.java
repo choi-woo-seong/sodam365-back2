@@ -2,6 +2,7 @@ package com.project.sodam365.controller;
 
 import com.project.sodam365.dto.QuestionDto;
 import com.project.sodam365.service.QuestionService;
+import com.project.sodam365.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,9 +13,13 @@ import org.springframework.web.bind.annotation.*;
 public class QuestionController {
 
     private final QuestionService questionService;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody QuestionDto dto, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> create(@RequestBody QuestionDto dto,
+                                    @RequestHeader("Authorization") String token) {
+        String userId = jwtUtil.extractUsername(token); // 🔥 JWT에서 userId 추출
+        dto.setWriter(userId); // 🔥 dto에 작성자 정보 세팅
         return ResponseEntity.ok(questionService.createQuestion(dto, token));
     }
 
@@ -35,9 +40,9 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.updateQuestion(id, dto, token));
     }
 
-
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> delete(@PathVariable Long id,
+                                    @RequestHeader("Authorization") String token) {
         questionService.deleteQuestion(id, token);
         return ResponseEntity.ok().build();
     }

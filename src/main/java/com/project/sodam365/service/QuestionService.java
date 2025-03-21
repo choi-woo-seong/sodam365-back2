@@ -22,9 +22,13 @@ public class QuestionService {
 
     public Question createQuestion(QuestionDto dto, String token) {
         String userId = jwtUtil.extractUsername(token);
+        String name = jwtUtil.extractName(token); // ✅ 이름도 추출
+
         Question question = new Question();
         question.setTitle(dto.getTitle());
         question.setContent(dto.getContent());
+        question.setWriter(userId);
+        question.setWriterName(name); // ✅ 여기!
 
         if (userRepository.findById(userId).isPresent()) {
             question.setUser(userRepository.findById(userId).get());
@@ -37,19 +41,17 @@ public class QuestionService {
         return questionRepository.save(question);
     }
 
+
     public void deleteQuestion(Long id, String token) {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("질문이 존재하지 않음"));
 
         String userId = jwtUtil.extractUsername(token);
-
         boolean isAdmin = jwtUtil.isAdmin(token);
 
-        if (
-                (question.getUser() != null && question.getUser().getUserid().equals(userId)) ||
-                        (question.getNuser() != null && question.getNuser().getNUserid().equals(userId)) ||
-                        isAdmin
-        ) {
+        if ((question.getUser() != null && question.getUser().getUserid().equals(userId)) ||
+                (question.getNuser() != null && question.getNuser().getNUserid().equals(userId)) ||
+                isAdmin) {
             questionRepository.delete(question);
         } else {
             throw new RuntimeException("삭제 권한이 없습니다.");
@@ -60,10 +62,9 @@ public class QuestionService {
         return questionRepository.findAll();
     }
 
-
-
     public Question getQuestion(Long id) {
-        return questionRepository.findById(id).orElseThrow(() -> new RuntimeException("질문 없음"));
+        return questionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("질문 없음"));
     }
 
     public Question updateQuestion(Long id, QuestionDto dto, String token) {
@@ -85,5 +86,4 @@ public class QuestionService {
 
         return questionRepository.save(question);
     }
-
 }

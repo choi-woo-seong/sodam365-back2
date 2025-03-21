@@ -10,17 +10,24 @@ import lombok.Setter;
 @Setter
 @Table(name = "answer")
 public class Answer extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 1000)
-    private String content;
+    @Column(length = 100, nullable = true)
+    private String a_title;
+
+    @Column(length = 1000, nullable = false)
+    private String a_contents;
+
+    @Column(length = 1000, nullable = true)
+    private String answer;
+
+    @Column(nullable = false)
+    private String adminId; // 관리자 ID 저장
 
     @OneToOne
     @JoinColumn(name = "question_id", nullable = false)
     private Question question;
-
-    @Column(nullable = false)
-    private String adminId; // 관리자 이름 (문자열)
 }

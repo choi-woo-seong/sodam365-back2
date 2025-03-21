@@ -1,6 +1,7 @@
 package com.project.sodam365.controller;
 
 import com.project.sodam365.dto.*;
+import com.project.sodam365.entity.Notice;
 import com.project.sodam365.entity.Recent;
 import com.project.sodam365.repository.*;
 import com.project.sodam365.util.JwtUtil;
@@ -23,6 +24,7 @@ public class MainController {
     private final CommunityRepository communityRepository;
     private final QuestionRepository questionRepository;
     private final RecentRepository recentRepository;
+    private final NoticeRepository noticeRepository;
     private final JwtUtil jwtUtil;
 
     // ✅ 메인 페이지 데이터 조회 (각 카테고리별 최근 3개 + 최근 본 글)
@@ -48,10 +50,11 @@ public class MainController {
         recentPosts.put("community", communityRepository.findTop3ByOrderByIdDesc()
                 .stream().map(CommunityDto::fromEntity).collect(Collectors.toList()));
 
-//        recentPosts.put("qna", answerRepository.findTop3ByOrderByNoDesc()
-//                .stream().map(QnaDto::fromEntity).collect(Collectors.toList()));
         recentPosts.put("question", questionRepository.findTop3ByOrderByIdDesc()
                 .stream().map(QuestionDto::fromEntity).collect(Collectors.toList()));
+
+        recentPosts.put("notice", noticeRepository.findTop3ByOrderByIdDesc()
+                .stream().map(NoticeDto::fromEntity).collect(Collectors.toList()));
 
         // ✅ 최근 본 글 조회 (DTO 변환 후 저장)
         recentPosts.put("recent", recentRepository.findTop3ByUseridOrderByViewedAtDesc(userid)

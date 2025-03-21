@@ -22,18 +22,19 @@ public class JwtUtil {
         this.EXPIRATION_TIME = expiration;
     }
 
-    public String generateToken(String id, String role) {
+    public String generateToken(String id, String role, String name) {
         // 🔥 여기서 "admin"인지 체크하고, role 값을 "admin"으로 올바르게 설정
         if ("admin".equals(id)) {  // userId가 "admin"이면 role을 강제로 "admin"으로 설정
             role = "admin";
         }
 
         return Jwts.builder()
-                .setSubject(id)  // 🔹 user ID (예: "admin")
-                .claim("role", role)  // 🔥 JWT에 role 값 저장
-                .setIssuedAt(new Date())  // 발급 시간
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))  // 만료 시간
-                .signWith(SECRET_KEY)  // 서명
+                .setSubject(id)
+                .claim("role", role)
+                .claim("name", name) // 🔥 이제 문제 없음!
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(SECRET_KEY)
                 .compact();
     }
 
@@ -71,6 +72,21 @@ public class JwtUtil {
                 .getBody()
                 .getSubject(); // ✅ 토큰의 Subject에서 `userid` 반환
     }
+    // 이름 뽑아내기
+    public String extractName(String token) {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("name", String.class); // 🔥 name 필드 추출
+    }
+
 
     // 🔹 관리자(`admin`) 계정 여부 확인
     public boolean isAdmin(String token) {

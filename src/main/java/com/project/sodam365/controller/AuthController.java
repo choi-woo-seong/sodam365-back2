@@ -96,7 +96,7 @@ public class AuthController {
         Map<String, Object> response = new HashMap<>();
 
         if (foundUser.isPresent() && passwordEncoder.matches(nuser.getNPassword(), foundUser.get().getNPassword())) {
-            String token = jwtUtil.generateToken(foundUser.get().getNUserid(), "nuser");
+            String token = jwtUtil.generateToken(foundUser.get().getNUserid(),"nuser", foundUser.get().getNName());
 
             response.put("success", true);
             response.put("token", token);
@@ -129,7 +129,7 @@ public class AuthController {
 
             // 🔥 비밀번호 & 사업자 번호 일치 여부 확인
             if (passwordEncoder.matches(rawPassword, encodedPassword) && inputOwnerNum.equals(storedOwnerNum)) {
-                String token = jwtUtil.generateToken(foundUser.get().getUserid(), "buser");
+                String token = jwtUtil.generateToken(foundUser.get().getUserid(), "buser", foundUser.get().getName());
 
                 response.put("success", true);
                 response.put("token", token);

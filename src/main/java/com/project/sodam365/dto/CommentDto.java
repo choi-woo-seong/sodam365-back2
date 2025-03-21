@@ -14,13 +14,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class CommentDto {
-    private Long id; // 댓글 ID
-    private String c_comment; // ✅ 댓글 내용
-    private String authorName; // ✅ 작성자 이름
-    private String authorType; // ✅ 작성자 유형 ("USER" 또는 "NUSER")
-    private Long communityId; // ✅ 게시글 ID
-    private LocalDateTime createdAt; // ✅ 작성시간 추가
-
+    private Long id;
+    private String c_comment;
+    private String authorName;
+    private String authorType;
+    private Long communityId;
+    private LocalDateTime createdAt;
 
     public static CommentDto fromEntity(Comment comment) {
         return CommentDto.builder()
@@ -28,19 +27,19 @@ public class CommentDto {
                 .c_comment(comment.getC_comment())
                 .authorName(comment.getAuthorName())
                 .authorType(comment.getAuthorType())
-                .createdAt(comment.getCreatedAt()) // ✅ 추가
                 .communityId(comment.getCommunity().getId())
+                .createdAt(comment.getCreatedAt())
                 .build();
     }
 
-    public static Comment toEntity(CommentDto dto, Community community, User user, Nuser nuser) {
+    public Comment toEntity(User user, Nuser nuser, Community community) {
         return Comment.builder()
-                .c_comment(dto.getC_comment())
+                .c_comment(this.c_comment)
                 .authorName(user != null ? user.getName() : nuser.getNName())
                 .authorType(user != null ? "USER" : "NUSER")
-                .community(community)
                 .user(user)
                 .nuser(nuser)
+                .community(community)
                 .build();
     }
 }

@@ -32,24 +32,37 @@ public class AnswerService {
         }
 
         Answer answer = new Answer();
-        answer.setContent(dto.getContent());
+        answer.setA_title(dto.getA_title());
+        answer.setA_contents(dto.getA_contents());
+        answer.setAnswer(dto.getAnswer());
         answer.setAdminId(jwtUtil.extractUsername(token));
         answer.setQuestion(question);
 
+        // 🔥 양방향 연관관계 설정 명시적으로 추가
+        question.setAnswer(answer);
         question.setAnswered(true);
-        questionRepository.save(question); // 상태 업데이트
 
-        return answerRepository.save(answer);
+        // 🔄 반드시 answer 먼저 저장
+        answerRepository.save(answer);
+        questionRepository.save(question);
+
+        return answer;
     }
+
 
     public List<Answer> getAllAnswers() {
         return answerRepository.findAll();
     }
 
-
     public Answer getAnswerById(Long id) {
         return answerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("답변 없음"));
+    }
+
+    public AnswerDto getAnswerByQuestionId(Long questionId) {
+        Answer answer = answerRepository.findByQuestionId(questionId)
+                .orElseThrow(() -> new RuntimeException("해당 질문에 대한 답변이 없습니다."));
+        return AnswerDto.fromEntity(answer);
     }
 
 
@@ -58,28 +71,25 @@ public class AnswerService {
             throw new IllegalArgumentException("관리자만 수정 가능");
         }
 
-        Answer answer = answerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("답변 없음"));
+        Answer answer = getAnswerById(id);
+        answer.setA_title(dto.getA_title());
+        answer.setA_contents(dto.getA_contents());
+        answer.setAnswer(dto.getAnswer());
 
-        answer.setContent(dto.getContent());
         return answerRepository.save(answer);
     }
-
 
     public void deleteAnswer(Long id, String token) {
         if (!jwtUtil.isAdmin(token)) {
             throw new IllegalArgumentException("관리자만 삭제 가능");
         }
 
-        Answer answer = answerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("답변 없음"));
-
-        // 연결된 질문 상태 초기화
+        Answer answer = getAnswerById(id);
         Question question = answer.getQuestion();
         question.setAnswered(false);
         questionRepository.save(question);
 
         answerRepository.delete(answer);
     }
-
 }
+
