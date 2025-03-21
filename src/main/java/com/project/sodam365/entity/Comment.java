@@ -4,6 +4,8 @@ import com.project.sodam365.dto.CommentDto;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "comment")
 @Getter
@@ -36,6 +38,16 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "nuserid")
     private Nuser nuser; // ✅ Nuser 테이블과 연결
+
+    @Column(updatable = false)
+    private LocalDateTime createdAt; // ✅ nullable 제거 및 기본값 설정
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) { // ✅ createdAt이 null이면 현재 시간으로 설정
+            createdAt = LocalDateTime.now();
+        }
+    }
 
     // ✅ `CommentDto` → `Comment` 변환하는 `toEntity` 메서드 추가
     public static Comment toEntity(CommentDto dto, Community community, User user, Nuser nuser) {

@@ -50,7 +50,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/community/searchAll").permitAll() //비즈니스 전체 조회
                         .requestMatchers("/api/community/communityDetail/**").permitAll() //비즈니스 특정 조회
                         .requestMatchers("/community/create", "/community/update/**", "/community/delete/**").authenticated() // 🔐 인증 필요
-
+                        .requestMatchers("/api/comment/byCommunity/**").permitAll()
+                        .requestMatchers("/api/comment/create", "/api/comment/update/**", "/api/comment/delete/**").authenticated()
+                        .requestMatchers("/api/notice/create", "/api/notice/update", "/api/notice/delete").authenticated()
+                        .requestMatchers("/api/notice/searchAll").permitAll()
+                        .requestMatchers("/api/notice/noticeDetail/**").permitAll()
 
                         .anyRequest().authenticated()
                 )

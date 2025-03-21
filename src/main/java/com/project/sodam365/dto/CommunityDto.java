@@ -3,6 +3,7 @@ package com.project.sodam365.dto;
 import com.project.sodam365.entity.Community;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Collections; // ✅ 추가 필요
@@ -20,6 +21,8 @@ public class CommunityDto {
     private String authorName; // ✅ 작성자 이름 (User 또는 Nuser)
     private String authorType; // ✅ 작성자 유형 ("USER" 또는 "NUSER")
     private List<CommentDto> comments; // ✅ 댓글 리스트 추가
+    private LocalDateTime createdAt; // ✅ 작성시간 추가
+
 
 
     // ✅ Entity → DTO 변환
@@ -30,6 +33,7 @@ public class CommunityDto {
                 .c_content(community.getC_content())
                 .authorName(community.getAuthorName())
                 .authorType(community.getAuthorType())
+                .createdAt(community.getCreatedAt()) // ✅ 추가
                 .comments(community.getComments() != null ?
                         community.getComments().stream().map(CommentDto::fromEntity).collect(Collectors.toList())
                         : Collections.emptyList()) // ✅ `null`이면 빈 리스트 반환

@@ -6,6 +6,8 @@ import com.project.sodam365.entity.Nuser;
 import com.project.sodam365.entity.User;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,6 +19,8 @@ public class CommentDto {
     private String authorName; // ✅ 작성자 이름
     private String authorType; // ✅ 작성자 유형 ("USER" 또는 "NUSER")
     private Long communityId; // ✅ 게시글 ID
+    private LocalDateTime createdAt; // ✅ 작성시간 추가
+
 
     public static CommentDto fromEntity(Comment comment) {
         return CommentDto.builder()
@@ -24,6 +28,7 @@ public class CommentDto {
                 .c_comment(comment.getC_comment())
                 .authorName(comment.getAuthorName())
                 .authorType(comment.getAuthorType())
+                .createdAt(comment.getCreatedAt()) // ✅ 추가
                 .communityId(comment.getCommunity().getId())
                 .build();
     }

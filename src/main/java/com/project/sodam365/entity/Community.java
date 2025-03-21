@@ -3,6 +3,7 @@ package com.project.sodam365.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,5 +42,13 @@ public class Community {
     @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
+    @Column(updatable = false)
+    private LocalDateTime createdAt; // ✅ nullable 제거 및 기본값 설정
 
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) { // ✅ createdAt이 null이면 현재 시간으로 설정
+            createdAt = LocalDateTime.now();
+        }
+    }
 }
