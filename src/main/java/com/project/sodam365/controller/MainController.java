@@ -21,7 +21,7 @@ public class MainController {
     private final BizRepository bizRepository;
     private final GovRepository govRepository;
     private final CommunityRepository communityRepository;
-    private final AnswerRepository answerRepository;
+    private final QuestionRepository questionRepository;
     private final RecentRepository recentRepository;
     private final JwtUtil jwtUtil;
 
@@ -48,8 +48,10 @@ public class MainController {
         recentPosts.put("community", communityRepository.findTop3ByOrderByIdDesc()
                 .stream().map(CommunityDto::fromEntity).collect(Collectors.toList()));
 
-        recentPosts.put("qna", answerRepository.findTop3ByOrderByNoDesc()
-                .stream().map(QnaDto::fromEntity).collect(Collectors.toList()));
+//        recentPosts.put("qna", answerRepository.findTop3ByOrderByNoDesc()
+//                .stream().map(QnaDto::fromEntity).collect(Collectors.toList()));
+        recentPosts.put("question", questionRepository.findTop3ByOrderByIdDesc()
+                .stream().map(QuestionDto::fromEntity).collect(Collectors.toList()));
 
         // ✅ 최근 본 글 조회 (DTO 변환 후 저장)
         recentPosts.put("recent", recentRepository.findTop3ByUseridOrderByViewedAtDesc(userid)

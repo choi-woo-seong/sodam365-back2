@@ -1,33 +1,26 @@
 package com.project.sodam365.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "answer")
 @Getter
 @Setter
-public class Answer extends BaseTimeEntity{
+@Table(name = "answer")
+public class Answer extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long no;
+    private Long id;
 
-    @Column(length = 30, nullable = false)
-    private String a_title;
+    @Column(nullable = false, length = 1000)
+    private String content;
 
-    @Column(length = 500, nullable = false)
-    private String a_contents;
+    @OneToOne
+    @JoinColumn(name = "question_id", nullable = false)
+    private Question question;
 
-    @Column(length = 500, nullable = false)
-    private String answer;
-
-    @ManyToOne
-    @JoinColumn(name = "n_userid", nullable = false)
-    private Nuser n_user;
-
-    @ManyToOne
-    @JoinColumn(name = "userid", nullable = false)
-    private User userid;
-
+    @Column(nullable = false)
+    private String adminId; // 관리자 이름 (문자열)
 }

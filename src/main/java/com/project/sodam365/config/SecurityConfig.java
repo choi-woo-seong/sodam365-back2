@@ -55,6 +55,13 @@ public class SecurityConfig {
                         .requestMatchers("/api/notice/create", "/api/notice/update", "/api/notice/delete").authenticated()
                         .requestMatchers("/api/notice/searchAll").permitAll()
                         .requestMatchers("/api/notice/noticeDetail/**").permitAll()
+                        .requestMatchers("/api/question/create", "/api/question/update", "/api/question/delete").authenticated()
+                        .requestMatchers("/api/question/searchAll").permitAll()
+                        .requestMatchers("/api/question/questionDetail/**").permitAll()
+                        .requestMatchers("/api/answer/create", "/api/answer/update", "/api/answer/delete").authenticated()
+                        .requestMatchers("/api/answer/searchAll").permitAll()
+                        .requestMatchers("/api/answer/answerDetail/**").permitAll()
+
 
                         .anyRequest().authenticated()
                 )
