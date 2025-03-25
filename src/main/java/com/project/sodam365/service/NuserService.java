@@ -3,16 +3,19 @@ package com.project.sodam365.service;
 import com.project.sodam365.dto.NuserDto;
 import com.project.sodam365.entity.Nuser;
 import com.project.sodam365.repository.NuserRepository;
+import com.project.sodam365.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class NuserService {
     private final NuserRepository nuserRepository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder; // Spring에서 제공하는 비밀번호 암호화
 
     // 🔹 로그인 검증 (예외 처리 개선 및 Optional 사용)
@@ -67,4 +70,49 @@ public class NuserService {
     public boolean existsById(String nUserid) {
         return nuserRepository.existsById(nUserid);
     }
+
+    public boolean isUserIdDuplicateAcrossAll(String id) {
+        boolean isInUser = userRepository.findByUserid(id).isPresent();
+        boolean isInNuser = nuserRepository.findByNUserid(id).isPresent();
+        return isInUser || isInNuser;
+    }
+
+    public NuserDto getUserInfo(String nUserid) {
+        return nuserRepository.findByNUserid(nUserid)
+                .map(NuserDto::fromUserEntity)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+    }
+
+    public void updateUser(String nUserid, Map<String, Object> info) {
+        Nuser nuser = nuserRepository.findByNUserid(nUserid)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+//        nuser.setNName((String) info.get("nName"));
+        nuser.setNEmail((String) info.get("nEmail"));
+        nuser.setNPhone1((String) info.get("nPhone1"));
+        nuser.setNPhone2((String) info.get("nPhone2"));
+        nuser.setAddress((String) info.get("address"));
+
+        nuserRepository.save(nuser);
+    }
+
+    public void deleteUser(String nUserid) {
+        Nuser nuser = nuserRepository.findByNUserid(nUserid)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        nuserRepository.delete(nuser);
+    }
+
+    public void changePassword(String nUserid, String currentPassword, String newPassword) {
+        Nuser nuser = nuserRepository.findByNUserid(nUserid)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+
+        if (!passwordEncoder.matches(currentPassword, nuser.getNPassword())) {
+            throw new RuntimeException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        nuser.setNPassword(passwordEncoder.encode(newPassword));
+        nuserRepository.save(nuser);
+    }
+
 }

@@ -9,4 +9,8 @@ import java.util.List;
 @Repository
 public interface BizRepository extends JpaRepository<Biz, Long> {
     List<Biz> findTop3ByOrderByNoDesc();
+    // 정확한 객체명과 필드명 사용
+    List<Biz> findByUserid_Userid(String userid);
+
+
 }

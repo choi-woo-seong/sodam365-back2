@@ -1,5 +1,6 @@
 package com.project.sodam365.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.project.sodam365.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,5 +33,6 @@ public class Product extends BaseTimeEntity { // ✅ `BaseTimeEntity`에서 상�
 
     @ManyToOne
     @JoinColumn(name = "userid", referencedColumnName = "userid", nullable = false)
+    @JsonBackReference
     private User user;
 }

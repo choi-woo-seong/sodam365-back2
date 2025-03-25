@@ -25,10 +25,6 @@ public class Biz extends BaseTimeEntity{
 
     @Column(length = 100, nullable = false)
     private String b_link;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "n_userid", nullable = false)
-//    private Nuser n_user;
 
     @ManyToOne
     @JoinColumn(name = "userid", nullable = false)

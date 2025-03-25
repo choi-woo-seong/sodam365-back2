@@ -18,7 +18,4 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<ProductDto> findAllProductsWithUsername();
     Optional<Product> findByNo(Long no);
     List<Product> findTop3ByOrderByNoDesc(); // ✅ 최근 3개 조회 (no 내림차순)
-
-
-
 }

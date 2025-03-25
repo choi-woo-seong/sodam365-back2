@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -87,4 +88,55 @@ public class UserService {
     public boolean isUserIdDuplicate(String userid) {
         return userRepository.existsByUserid(userid);
     }
+
+    public boolean isUserIdDuplicateAcrossAll(String id) {
+        boolean isInUser = userRepository.findByUserid(id).isPresent();
+        boolean isInNuser = nuserRepository.findByNUserid(id).isPresent();
+        return isInUser || isInNuser;
+    }
+
+    public UserDto getUserInfo(String userid) {
+        return userRepository.findByUserid(userid)
+                .map(UserDto::fromUserEntity)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+    }
+
+    public void updateUser(String userid, Map<String, Object> info) {
+        User user = userRepository.findByUserid(userid)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+//        user.setName((String) info.get("name"));
+        user.setEmail((String) info.get("email"));
+        user.setPhone1((String) info.get("phone1"));
+        user.setPhone2((String) info.get("phone2"));
+//        user.setOwnername((String) info.get("ownername"));
+        user.setOwnernum((String) info.get("ownernum"));
+        user.setOwnerloc((String) info.get("ownerloc"));
+
+        userRepository.save(user);
+    }
+
+    public void deleteUser(String userid) {
+        User user = userRepository.findByUserid(userid)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        userRepository.delete(user);
+    }
+
+
+    public void changePassword(String userid, String currentPassword, String newPassword) {
+        User user = userRepository.findByUserid(userid)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        System.out.println("🔐 사용자가 입력한 비밀번호: " + currentPassword);
+        System.out.println("🔐 DB 저장된 암호화 비밀번호: " + user.getPassword());
+        System.out.println("✅ 일치 여부: " + passwordEncoder.matches(currentPassword, user.getPassword()));
+
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new RuntimeException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
+
 }

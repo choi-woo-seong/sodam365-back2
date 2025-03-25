@@ -1,5 +1,6 @@
 package com.project.sodam365.controller;
 
+import com.project.sodam365.dto.NuserDto;
 import com.project.sodam365.entity.Nuser;
 import com.project.sodam365.entity.User;
 import com.project.sodam365.repository.NuserRepository;
@@ -27,31 +28,38 @@ public class AuthController {
 
     // 🔹 일반 회원 가입 (성공 시 true, 실패 시 false)
     @PostMapping("/register/nuser")
-    public ResponseEntity<Map<String, Object>> registerNuser(@RequestBody Nuser nuser) {
+    public ResponseEntity<Map<String, Object>> registerNuser(@RequestBody NuserDto nuserDto) {
         Map<String, Object> response = new HashMap<>();
 
-        if (nuserRepository.findByNUserid(nuser.getNUserid()).isPresent()) {
+        if (nuserDto.getN_password() == null || nuserDto.getN_password().isBlank()) {
+            response.put("success", false);
+            response.put("error", "비밀번호는 필수 항목입니다.");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        if (nuserRepository.findByNUserid(nuserDto.getN_userid()).isPresent()) {
             response.put("success", false);
             response.put("error", "User ID already exists");
             return ResponseEntity.badRequest().body(response);
         }
 
-        String encryptedPassword = passwordEncoder.encode(nuser.getNPassword());
+        String encryptedPassword = passwordEncoder.encode(nuserDto.getN_password());
 
         Nuser user = Nuser.builder()
-                .nUserid(nuser.getNUserid())
+                .nUserid(nuserDto.getN_userid())
                 .nPassword(encryptedPassword)
-                .nName(nuser.getNName())
-                .nEmail(nuser.getNEmail())
-                .address(nuser.getAddress())
-                .nPhone1(nuser.getNPhone1())
-                .nPhone2(nuser.getNPhone2())
+                .nName(nuserDto.getN_name())
+                .nEmail(nuserDto.getN_email())
+                .address(nuserDto.getAddress())
+                .nPhone1(nuserDto.getN_phone1())
+                .nPhone2(nuserDto.getN_phone2())
                 .build();
 
         nuserRepository.save(user);
         response.put("success", true);
         return ResponseEntity.ok(response);
     }
+
 
     // 🔹 비즈니스 회원 가입 (성공 시 true, 실패 시 false)
     @PostMapping("/register/buser")
@@ -91,12 +99,16 @@ public class AuthController {
 
     // 🔹 일반 회원 로그인 (JWT + 사용자 이름 반환)
     @PostMapping("/login/nuser")
-    public ResponseEntity<Map<String, Object>> loginNuser(@RequestBody Nuser nuser) {
-        Optional<Nuser> foundUser = nuserRepository.findByNUserid(nuser.getNUserid());
+    public ResponseEntity<Map<String, Object>> loginNuser(@RequestBody NuserDto loginDto) {
         Map<String, Object> response = new HashMap<>();
 
-        if (foundUser.isPresent() && passwordEncoder.matches(nuser.getNPassword(), foundUser.get().getNPassword())) {
-            String token = jwtUtil.generateToken(foundUser.get().getNUserid(),"nuser", foundUser.get().getNName());
+        Optional<Nuser> foundUser = nuserRepository.findByNUserid(loginDto.getN_userid());
+
+        if (foundUser.isPresent() &&
+                passwordEncoder.matches(loginDto.getN_password(), foundUser.get().getNPassword())) {
+
+            String token = jwtUtil.generateToken(
+                    foundUser.get().getNUserid(), "nuser", foundUser.get().getNName());
 
             response.put("success", true);
             response.put("token", token);
@@ -105,9 +117,10 @@ public class AuthController {
         }
 
         response.put("success", false);
-        response.put("error", "Invalid credentials");
+        response.put("error", "아이디 또는 비밀번호가 일치하지 않습니다.");
         return ResponseEntity.status(401).body(response);
     }
+
 
     // 🔹 비즈니스 회원 로그인 (JWT + 사용자 이름 반환)
     @PostMapping("/login/buser")

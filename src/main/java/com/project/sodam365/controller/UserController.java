@@ -5,6 +5,7 @@ import com.project.sodam365.dto.UserDto;
 import com.project.sodam365.entity.User;
 import com.project.sodam365.service.NuserService;
 import com.project.sodam365.service.UserService;
+import com.project.sodam365.util.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
@@ -22,10 +23,12 @@ import java.util.stream.Collectors;
 public class UserController {
     private final UserService userService;
     private final NuserService nuserService;
+    private final JwtUtil jwtUtil;
 
-    public UserController(UserService userService, NuserService nuserService) {
+    public UserController(UserService userService, NuserService nuserService, JwtUtil jwtUtil) {
         this.userService = userService;
         this.nuserService = nuserService;
+        this.jwtUtil = jwtUtil;
     }
 
     // 테스트 엔드포인트
@@ -79,7 +82,8 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
-        boolean isDuplicate = nuserService.isNUserIdDuplicate(userId);
+        boolean isDuplicate = userService.isUserIdDuplicate(userId) || nuserService.isNUserIdDuplicate(userId);
+
         response.put("isDuplicate", isDuplicate);
 
         if (isDuplicate) {
@@ -96,7 +100,8 @@ public class UserController {
     // 비즈니스 사용자 아이디 중복 확인 (메서드 이름 변경 ✅)
     @GetMapping("/users/check-duplicate2")
     public ResponseEntity<Map<String, Object>> confirmBusinessID(@RequestParam("userid") String userid) {
-        boolean isDuplicate = userService.isUserIdDuplicate(userid);
+        boolean isDuplicate = userService.isUserIdDuplicate(userid) || nuserService.isNUserIdDuplicate(userid);
+
 
         Map<String, Object> response = new HashMap<>();
         response.put("isDuplicate", isDuplicate);
@@ -108,6 +113,72 @@ public class UserController {
         }
 
         return ResponseEntity.ok(response);
+    }
+    // 🔹 사업자 사용자 정보 조회
+    @GetMapping("/users/business/info")
+    public ResponseEntity<UserDto> getBusinessUserInfo(@RequestHeader("Authorization") String token) {
+        String userId = jwtUtil.extractUserId(token);
+        return ResponseEntity.ok(userService.getUserInfo(userId));
+    }
+
+    // 🔹 일반 사용자 정보 조회
+    @GetMapping("/users/normal/info")
+    public ResponseEntity<NuserDto> getNormalUserInfo(@RequestHeader("Authorization") String token) {
+        String userId = jwtUtil.extractUserId(token);
+        return ResponseEntity.ok(nuserService.getUserInfo(userId));
+    }
+
+    // 🔹 사업자 정보 수정
+    @PutMapping("/users/business/update")
+    public ResponseEntity<String> updateBusinessUser(@RequestHeader("Authorization") String token,
+                                                     @RequestBody Map<String, Object> userInfo) {
+        String userId = jwtUtil.extractUserId(token);
+        userService.updateUser(userId, userInfo);
+        return ResponseEntity.ok("사업자 정보 수정 완료");
+    }
+
+    // 🔹 일반 사용자 정보 수정
+    @PutMapping("/users/normal/update")
+    public ResponseEntity<String> updateNormalUser(@RequestHeader("Authorization") String token,
+                                                   @RequestBody Map<String, Object> userInfo) {
+        String userId = jwtUtil.extractUserId(token);
+        nuserService.updateUser(userId, userInfo);
+        return ResponseEntity.ok("일반 사용자 정보 수정 완료");
+    }
+
+    // 🔹 사업자 탈퇴
+    @DeleteMapping("/users/business/delete")
+    public ResponseEntity<String> deleteBusinessUser(@RequestHeader("Authorization") String token) {
+        String userId = jwtUtil.extractUserId(token);
+        userService.deleteUser(userId);
+        return ResponseEntity.ok("사업자 계정이 삭제되었습니다.");
+    }
+
+    // 🔹 일반 사용자 탈퇴
+    @DeleteMapping("/users/normal/delete")
+    public ResponseEntity<String> deleteNormalUser(@RequestHeader("Authorization") String token) {
+        String userId = jwtUtil.extractUserId(token);
+        nuserService.deleteUser(userId);
+        return ResponseEntity.ok("일반 사용자 계정이 삭제되었습니다.");
+    }
+
+    // 🔹 사업자 비밀번호 변경
+    @PutMapping("/users/business/password")
+    public ResponseEntity<String> changeBusinessPassword(@RequestHeader("Authorization") String token,
+                                                         @RequestBody Map<String, String> pwMap) {
+        String userid = jwtUtil.extractUserId(token);
+        userService.changePassword(userid, pwMap.get("currentPassword"), pwMap.get("newPassword"));
+        return ResponseEntity.ok("비밀번호가 변경되었습니다.");
+    }
+
+    // 🔹 일반 사용자 비밀번호 변경
+    @PutMapping("/users/normal/password")
+    public ResponseEntity<String> changeNormalPassword(@RequestHeader("Authorization") String token,
+                                                       @RequestBody Map<String, String> pwMap) {
+        String nUserid = jwtUtil.extractUserId(token);
+        nuserService.changePassword(nUserid, pwMap.get("currentPassword"), pwMap.get("newPassword"));
+        return ResponseEntity.ok("비밀번호가 변경되었습니다.");
+
     }
 
 

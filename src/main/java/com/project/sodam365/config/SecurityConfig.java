@@ -66,6 +66,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/gov/**").permitAll()
                         .requestMatchers("/api/bookmark/toggle", "/api/bookmark/searchAll", "/api/bookmark/check").authenticated()
                         .requestMatchers("/api/bookmark/mapped").authenticated()
+                        .requestMatchers("/api/mypage/posts").authenticated()
+                        .requestMatchers("/api/main/save-recent").authenticated()
 
                         .anyRequest().authenticated()
                 )

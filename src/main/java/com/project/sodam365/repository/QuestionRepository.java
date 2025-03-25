@@ -8,5 +8,11 @@ import java.util.List;
 
 public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> findTop3ByOrderByIdDesc();
+    // 사업자 사용자가 작성한 질문 조회
+    List<Question> findByUser_Userid(String userid);
+
+    // 일반 사용자가 작성한 질문 조회
+    List<Question> findByNuser_nUserid(String userid);
+
 
 }
