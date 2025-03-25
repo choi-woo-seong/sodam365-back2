@@ -35,7 +35,7 @@ public class Question extends BaseTimeEntity {
     private Nuser nuser;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "question", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private Answer answer;
 
     @Column(nullable = false)

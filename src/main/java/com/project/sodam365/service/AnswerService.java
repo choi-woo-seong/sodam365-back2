@@ -8,6 +8,7 @@ import com.project.sodam365.repository.QuestionRepository;
 import com.project.sodam365.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -65,7 +66,7 @@ public class AnswerService {
         return AnswerDto.fromEntity(answer);
     }
 
-
+    @Transactional
     public Answer updateAnswer(Long id, AnswerDto dto, String token) {
         if (!jwtUtil.isAdmin(token)) {
             throw new IllegalArgumentException("관리자만 수정 가능");
@@ -79,6 +80,7 @@ public class AnswerService {
         return answerRepository.save(answer);
     }
 
+    @Transactional
     public void deleteAnswer(Long id, String token) {
         if (!jwtUtil.isAdmin(token)) {
             throw new IllegalArgumentException("관리자만 삭제 가능");
@@ -86,6 +88,9 @@ public class AnswerService {
 
         Answer answer = getAnswerById(id);
         Question question = answer.getQuestion();
+
+        // 연관관계 끊기
+        question.setAnswer(null);
         question.setAnswered(false);
         questionRepository.save(question);
 

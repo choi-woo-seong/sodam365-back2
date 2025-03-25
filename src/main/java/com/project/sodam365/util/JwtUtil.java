@@ -118,5 +118,15 @@ public class JwtUtil {
 
         return claims.get("role", String.class); // 🔹 role 값 반환
     }
+
+    // 🔹 user / nuser 구분
+    public String extractUserType(String token) {
+        return getUserRole(token); // "user", "nuser", "admin" 중 하나
+    }
+
+    public String extractUserId(String token) {
+        return extractUsername(token); // subject 에 저장된 id 그대로
+    }
+
 }
 

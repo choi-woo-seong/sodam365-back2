@@ -58,10 +58,14 @@ public class SecurityConfig {
                         .requestMatchers("/api/question/create", "/api/question/update", "/api/question/delete").authenticated()
                         .requestMatchers("/api/question/searchAll").permitAll()
                         .requestMatchers("/api/question/questionDetail/**").permitAll()
+                        .requestMatchers("/api/answer/byQuestion/**").permitAll()
                         .requestMatchers("/api/answer/create", "/api/answer/update", "/api/answer/delete").authenticated()
                         .requestMatchers("/api/answer/searchAll").permitAll()
                         .requestMatchers("/api/answer/answerDetail/**").permitAll()
-
+                        .requestMatchers("/api/gov/fetch").permitAll()
+                        .requestMatchers("/api/gov/**").permitAll()
+                        .requestMatchers("/api/bookmark/toggle", "/api/bookmark/searchAll", "/api/bookmark/check").authenticated()
+                        .requestMatchers("/api/bookmark/mapped").authenticated()
 
                         .anyRequest().authenticated()
                 )

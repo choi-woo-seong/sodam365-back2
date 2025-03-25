@@ -14,31 +14,31 @@ public class Gov extends BaseTimeEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long no;
 
-    @Column(length = 30, nullable = false)
+    @Column(length = 1000, nullable = false)
     private String g_title;
 
-    @Column(length = 20, nullable = false)
-    private String financial_product;
+    @Column(length = 1000)
+    private String finPrdNm;
 
-    @Column(length = 10, nullable = false)
+    @Column(length = 1000)
     private String irt;
 
-    @Column(length = 10, nullable = false)
+    @Column(length = 1000)
     private String lnLmt;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 1000)
     private String trgt;
 
-    @Column(length = 50, nullable = false)
+    @Column(length = 1000)
     private String usge;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 1000)
     private String hdlInst;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 1000)
     private String maxTotLnTrm;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 1000)
     private String rdptMthd;
 
 }

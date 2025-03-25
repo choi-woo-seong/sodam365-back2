@@ -3,6 +3,8 @@ package com.project.sodam365.dto;
 import com.project.sodam365.entity.Answer;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,6 +16,7 @@ public class AnswerDto {
     private String a_contents;
     private String answer;
     private Long questionId;
+    private LocalDateTime createdAt;
 
     public static AnswerDto fromEntity(Answer answer) {
         return AnswerDto.builder()
@@ -22,6 +25,7 @@ public class AnswerDto {
                 .a_contents(answer.getA_contents())
                 .answer(answer.getAnswer())
                 .questionId(answer.getQuestion().getId())
+                .createdAt(answer.getCreatedAt())
                 .build();
     }
 }

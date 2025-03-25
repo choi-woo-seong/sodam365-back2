@@ -18,4 +18,9 @@ public abstract class BaseTimeEntity {
 
     @LastModifiedDate  // 수정될 때 자동 시간 갱신
     private LocalDateTime updatedAt;
+
+    // ✅ 명시적 getter 추가!
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 }
