@@ -19,12 +19,12 @@ spring:
       mail.smtp.starttls.enable: true
   sql:
     init:
-      mode: never
+      mode: always
 
   jpa:
     defer-datasource-initialization: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
       #################################
     properties:
       hibernate:
