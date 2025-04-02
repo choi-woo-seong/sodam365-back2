@@ -1,32 +1,44 @@
 server:
   port: 8080
   address: 0.0.0.0
-#MySQL 설정
+
 spring:
+        ##################################
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://192.168.0.84:3306/sodamdb
     username: user1
     password: 1111
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
   sql:
     init:
       mode: never
-    # always : 항상, embedded : 내장메모지디비, never : 사용안함
+
   jpa:
-    #spring.sql.init
     defer-datasource-initialization: true
     hibernate:
       ddl-auto: update
+      #################################
     properties:
       hibernate:
         show_sql: true
         format_sql: true
 
-  # Security Session 시간 설정
-  server:
-    servlet:
-      session:
-        timeout: 5s
+  redis:
+    host: localhost
+    port: 6379
+
+  servlet:
+    session:
+      timeout: 5s
+
 jwt:
   secret: mysupersecretkeymysupersecretkeymysupersecretkey
   expiration: 3600000

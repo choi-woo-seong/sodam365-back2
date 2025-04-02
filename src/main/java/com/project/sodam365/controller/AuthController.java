@@ -2,6 +2,7 @@ package com.project.sodam365.controller;
 
 import com.project.sodam365.dto.NuserDto;
 import com.project.sodam365.entity.Nuser;
+import com.project.sodam365.entity.Role;
 import com.project.sodam365.entity.User;
 import com.project.sodam365.repository.NuserRepository;
 import com.project.sodam365.repository.UserRepository;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import com.project.sodam365.service.EmailVerificationService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,13 +27,21 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final NuserRepository nuserRepository;
     private final UserRepository userRepository;
+    private final EmailVerificationService emailVerificationService;
 
-    // 🔹 일반 회원 가입 (성공 시 true, 실패 시 false)
+    // 🔹 일반 회원 가입
     @PostMapping("/register/nuser")
     public ResponseEntity<Map<String, Object>> registerNuser(@RequestBody NuserDto nuserDto) {
         Map<String, Object> response = new HashMap<>();
 
-        if (nuserDto.getN_password() == null || nuserDto.getN_password().isBlank()) {
+        // ✅ 이메일 인증 여부 확인
+        if (!emailVerificationService.isEmailVerified(nuserDto.getEmail())) {
+            response.put("success", false);
+            response.put("error", "이메일 인증을 진행해주십시오.");
+            return ResponseEntity.status(403).body(response);
+        }
+
+        if (nuserDto.getPassword() == null || nuserDto.getPassword().isBlank()) {
             response.put("success", false);
             response.put("error", "비밀번호는 필수 항목입니다.");
             return ResponseEntity.badRequest().body(response);
@@ -43,16 +53,17 @@ public class AuthController {
             return ResponseEntity.badRequest().body(response);
         }
 
-        String encryptedPassword = passwordEncoder.encode(nuserDto.getN_password());
+        String encryptedPassword = passwordEncoder.encode(nuserDto.getPassword());
 
         Nuser user = Nuser.builder()
                 .nUserid(nuserDto.getN_userid())
                 .nPassword(encryptedPassword)
-                .nName(nuserDto.getN_name())
-                .nEmail(nuserDto.getN_email())
+                .nName(nuserDto.getName())
+                .nEmail(nuserDto.getEmail())
                 .address(nuserDto.getAddress())
-                .nPhone1(nuserDto.getN_phone1())
-                .nPhone2(nuserDto.getN_phone2())
+                .nPhone1(nuserDto.getPhone1())
+                .nPhone2(nuserDto.getPhone2())
+                .role(Role.ROLE_USER)
                 .build();
 
         nuserRepository.save(user);
@@ -60,11 +71,17 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-
-    // 🔹 비즈니스 회원 가입 (성공 시 true, 실패 시 false)
+    // 🔹 비즈니스 회원 가입
     @PostMapping("/register/buser")
     public ResponseEntity<Map<String, Object>> registerBuser(@RequestBody User user) {
         Map<String, Object> response = new HashMap<>();
+
+        // ✅ 이메일 인증 여부 확인
+        if (!emailVerificationService.isEmailVerified(user.getEmail())) {
+            response.put("success", false);
+            response.put("error", "이메일 인증을 진행해주십시오.");
+            return ResponseEntity.status(403).body(response);
+        }
 
         if (userRepository.findByUserid(user.getUserid()).isPresent()) {
             response.put("success", false);
@@ -72,16 +89,11 @@ public class AuthController {
             return ResponseEntity.badRequest().body(response);
         }
 
-        // 🔥 회원가입 시 비밀번호 암호화 확인
-        System.out.println("🔍 암호화 전 비밀번호: " + user.getPassword());
-
         String encryptedPassword = passwordEncoder.encode(user.getPassword());
-
-        System.out.println("🔍 암호화된 비밀번호: " + encryptedPassword);
 
         User buser = User.builder()
                 .userid(user.getUserid())
-                .password(encryptedPassword) // 🔥 암호화된 비밀번호 저장
+                .password(encryptedPassword)
                 .name(user.getName())
                 .ownername(user.getOwnername())
                 .ownernum(user.getOwnernum())
@@ -89,6 +101,7 @@ public class AuthController {
                 .email(user.getEmail())
                 .phone1(user.getPhone1())
                 .phone2(user.getPhone2())
+                .role(Role.ROLE_BUSER)
                 .build();
 
         userRepository.save(buser);
@@ -105,7 +118,7 @@ public class AuthController {
         Optional<Nuser> foundUser = nuserRepository.findByNUserid(loginDto.getN_userid());
 
         if (foundUser.isPresent() &&
-                passwordEncoder.matches(loginDto.getN_password(), foundUser.get().getNPassword())) {
+                passwordEncoder.matches(loginDto.getPassword(), foundUser.get().getNPassword())) {
 
             String token = jwtUtil.generateToken(
                     foundUser.get().getNUserid(), "nuser", foundUser.get().getNName());

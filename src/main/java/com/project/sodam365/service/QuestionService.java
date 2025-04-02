@@ -20,7 +20,7 @@ public class QuestionService {
     private final NuserRepository nuserRepository;
     private final JwtUtil jwtUtil;
 
-    public Question createQuestion(QuestionDto dto, String token) {
+    public QuestionDto createQuestion(QuestionDto dto, String token) {
         String userId = jwtUtil.extractUsername(token);
         String name = jwtUtil.extractName(token); // ✅ 이름도 추출
 
@@ -38,7 +38,7 @@ public class QuestionService {
             throw new RuntimeException("로그인 유저를 찾을 수 없습니다.");
         }
 
-        return questionRepository.save(question);
+        return QuestionDto.fromEntity(questionRepository.save(question));
     }
 
 
@@ -58,16 +58,22 @@ public class QuestionService {
         }
     }
 
-    public List<Question> getAllQuestions() {
-        return questionRepository.findAll();
+    public List<QuestionDto> getAllQuestions() {
+        return questionRepository.findAll().stream()
+                .map(QuestionDto::fromEntity)
+                .toList();
     }
 
-    public Question getQuestion(Long id) {
-        return questionRepository.findById(id)
+
+
+    public QuestionDto getQuestion(Long id) {
+        Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("질문 없음"));
+        return QuestionDto.fromEntity(question);
     }
 
-    public Question updateQuestion(Long id, QuestionDto dto, String token) {
+
+    public QuestionDto updateQuestion(Long id, QuestionDto dto, String token) {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("질문 없음"));
 
@@ -84,6 +90,6 @@ public class QuestionService {
         question.setTitle(dto.getTitle());
         question.setContent(dto.getContent());
 
-        return questionRepository.save(question);
+        return QuestionDto.fromEntity(questionRepository.save(question));
     }
 }

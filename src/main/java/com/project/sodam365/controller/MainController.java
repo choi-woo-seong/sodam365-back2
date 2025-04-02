@@ -57,7 +57,7 @@ public class MainController {
                 .stream().map(NoticeDto::fromEntity).collect(Collectors.toList()));
 
         // ✅ 최근 본 글 조회 (DTO 변환 후 저장)
-        recentPosts.put("recent", recentRepository.findTop3ByUseridOrderByViewedAtDesc(userid)
+        recentPosts.put("recent", recentRepository.findTop5ByUseridOrderByViewedAtDesc(userid)
                 .stream().map(RecentDto::fromEntity).collect(Collectors.toList()));
 
         return ResponseEntity.ok(recentPosts);

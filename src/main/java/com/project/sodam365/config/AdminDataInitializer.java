@@ -1,5 +1,6 @@
 package com.project.sodam365.config;
 
+import com.project.sodam365.entity.Role;
 import com.project.sodam365.entity.User;
 import com.project.sodam365.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class AdminDataInitializer implements CommandLineRunner {
                     .email("admin@example.com")
                     .phone1("010-0000-0000")
                     .phone2(null)
+                    .role(Role.ROLE_ADMIN)
                     .build();
 
             userRepository.save(admin);

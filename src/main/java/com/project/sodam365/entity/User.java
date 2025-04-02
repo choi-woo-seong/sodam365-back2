@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "b_user")  // ✅ 테이블명 유지
+@Table(name = "b_user")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,7 +19,7 @@ public class User extends BaseTimeEntity {
 
     @Id
     @Column(name = "userid", length = 50, nullable = false, updatable = false)
-    @JsonProperty("userid")  // ✅ JSON 매핑 명확화
+    @JsonProperty("userid")
     private String userid;
 
     @Column(name = "password", length = 100, nullable = false)
@@ -41,7 +43,7 @@ public class User extends BaseTimeEntity {
     private String ownerloc;
 
     @Column(name = "email", length = 30)
-    @JsonProperty("email")
+    @JsonProperty("b_email")
     private String email;
 
     @Column(name = "phone1", length = 20, nullable = false)
@@ -52,15 +54,46 @@ public class User extends BaseTimeEntity {
     @JsonProperty("phone2")
     private String phone2;
 
-    // 엔티티 저장 전, UUID 자동 생성
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
+    private List<Product> products = new ArrayList<>();
+
+    @OneToMany(mappedBy = "userid", cascade = CascadeType.ALL, orphanRemoval = true)
+    @org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
+    private List<Biz> bizList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
+    private List<Question> questions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
+    private List<Community> communities = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
+    private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
+    private List<Recent> recents = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
+    private List<Favorite> favorites = new ArrayList<>();
+
     @PrePersist
     public void generateId() {
         if (this.userid == null || this.userid.isEmpty()) {
             this.userid = UUID.randomUUID().toString();
         }
     }
-//    test
-    // 비밀번호 설정 (암호화 적용)
+
     public void encodePassword(String encodedPassword) {
         this.password = encodedPassword;
     }

@@ -20,6 +20,7 @@ public class BizDto {
     private String userid;
     private String username;
     private LocalDateTime createdDate;
+    private String ownerloc;
 
     public static BizDto fromEntity(Biz biz) {
         return BizDto.builder()
@@ -31,6 +32,7 @@ public class BizDto {
                 .userid(biz.getUserid().getUserid()) // ✅ User 엔티티에서 userid 가져오기
                 .createdDate(biz.getCreatedAt()) // BaseTimeEntity 상속된 createdAt 사용
                 .username(biz.getUserid().getName()) // User 엔티티에서 가져옴
+                .ownerloc(biz.getUserid().getOwnerloc())
                 .build();
     }
 

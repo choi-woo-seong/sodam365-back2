@@ -17,6 +17,7 @@ import java.util.Collections;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
     private final JwtUtil jwtUtil;
 
     public JwtAuthenticationFilter(JwtUtil jwtUtil) {
@@ -29,10 +30,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-        String token = request.getHeader("Authorization");
 
+        String token = request.getHeader("Authorization");
+        String uri = request.getRequestURI();
+
+        // ✅ 인증 없이 통과시킬 경로
+        if (uri.startsWith("/api/search/all") ||
+                uri.startsWith("/api/notice/searchAll") ||
+                uri.startsWith("/api/gov/fetch") ||
+                uri.startsWith("/api/question/searchAll") ||
+                uri.startsWith("/email/") ||
+                uri.startsWith("/auth/")) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // ✅ Authorization 헤더 처리
         if (token != null && token.startsWith("Bearer ")) {
             token = token.substring(7); // "Bearer " 제거
+
+            // ✅ null, 빈 문자열, undefined 방지
+            if (token.equals("null") || token.equals("undefined") || token.isBlank()) {
+                filterChain.doFilter(request, response); // 그냥 통과
+                return;
+            }
 
             if (jwtUtil.validateToken(token)) {
                 Claims claims = jwtUtil.getClaimsFromToken(token);

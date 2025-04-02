@@ -39,22 +39,22 @@ public class NuserService {
 
     // 🔹 새로운 사용자 생성 (비밀번호 암호화 포함)
     public void createUser(NuserDto dto) {
-        if (dto.getN_userid() == null || dto.getN_password() == null) {
+        if (dto.getN_userid() == null || dto.getPassword() == null) {
             throw new IllegalArgumentException("User ID와 Password는 필수 입력값입니다.");
         }
 
         // 비밀번호 암호화 적용
-        String encryptedPassword = passwordEncoder.encode(dto.getN_password());
+        String encryptedPassword = passwordEncoder.encode(dto.getPassword());
 
         // DTO → 엔티티 변환 (빌더 패턴 사용)
         Nuser user = Nuser.builder()
                 .nUserid(dto.getN_userid())
                 .nPassword(encryptedPassword) // 암호화된 비밀번호 저장
-                .nName(dto.getN_name())
-                .nEmail(dto.getN_email())
+                .nName(dto.getName())
+                .nEmail(dto.getEmail())
                 .address(dto.getAddress())
-                .nPhone1(dto.getN_phone1())
-                .nPhone2(dto.getN_phone2())
+                .nPhone1(dto.getPhone1())
+                .nPhone2(dto.getPhone2())
                 .build();
 
         nuserRepository.save(user);
@@ -87,10 +87,10 @@ public class NuserService {
         Nuser nuser = nuserRepository.findByNUserid(nUserid)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
-//        nuser.setNName((String) info.get("nName"));
-        nuser.setNEmail((String) info.get("nEmail"));
-        nuser.setNPhone1((String) info.get("nPhone1"));
-        nuser.setNPhone2((String) info.get("nPhone2"));
+        nuser.setNName((String) info.get("name"));
+        nuser.setNEmail((String) info.get("email"));
+        nuser.setNPhone1((String) info.get("phone1"));
+        nuser.setNPhone2((String) info.get("phone2"));
         nuser.setAddress((String) info.get("address"));
 
         nuserRepository.save(nuser);

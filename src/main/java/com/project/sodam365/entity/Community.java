@@ -40,6 +40,7 @@ public class Community {
     private Nuser nuser;
 
     @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+    @org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
     private List<Comment> comments = new ArrayList<>();
 
     @Column(updatable = false)

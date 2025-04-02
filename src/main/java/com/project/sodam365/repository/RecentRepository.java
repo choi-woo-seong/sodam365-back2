@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface RecentRepository extends JpaRepository<Recent, Long> {
-    List<Recent> findTop3ByUseridOrderByViewedAtDesc(String userid);
+    List<Recent> findTop5ByUseridOrderByViewedAtDesc(String userid);
     void deleteByUseridAndPostNo(String userid, Long postNo);
 }

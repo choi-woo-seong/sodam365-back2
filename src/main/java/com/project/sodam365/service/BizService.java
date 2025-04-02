@@ -2,8 +2,10 @@ package com.project.sodam365.service;
 
 import com.project.sodam365.dto.BizDto;
 import com.project.sodam365.entity.Biz;
+import com.project.sodam365.entity.FavoriteType;
 import com.project.sodam365.entity.User;
 import com.project.sodam365.repository.BizRepository;
+import com.project.sodam365.repository.FavoriteRepository;
 import com.project.sodam365.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -19,36 +21,34 @@ import java.util.stream.Collectors;
 public class BizService {
 
     private final BizRepository bizRepository;
-    private final UserRepository userRepository; // ✅ 추가됨!
+    private final UserRepository userRepository;
+    private final FavoriteRepository favoriteRepository;
 
-    // ✅ 게시글 등록
+    // 게시글 등록
     public BizDto createBiz(BizDto bizDto) {
-        // ✅ userid로 User 조회
         User user = userRepository.findByUserid(bizDto.getUserid())
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다."));
 
-        // ✅ Biz 엔티티 변환 후 저장
         Biz biz = BizDto.toEntity(bizDto, user);
-        bizRepository.save(biz);
-
-        return BizDto.fromEntity(biz);
+        Biz saved = bizRepository.save(biz); // ✅ 저장 후 반환된 객체로 DTO 변환
+        return BizDto.fromEntity(saved);
     }
 
-    // ✅ 전체 게시글 조회
+    // 전체 게시글 조회
     public List<BizDto> getAllBiz() {
         return bizRepository.findAll().stream()
                 .map(BizDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
-    // ✅ 특정 게시글 조회
+    // 특정 게시글 조회
     public BizDto getBizByNo(Long no) {
         Biz biz = bizRepository.findById(no)
                 .orElseThrow(() -> new EntityNotFoundException("비즈니스 게시글을 찾을 수 없습니다: " + no));
         return BizDto.fromEntity(biz);
     }
 
-    // ✅ 게시글 수정 (등록한 사용자만 가능)
+    // 게시글 수정
     public BizDto updateBiz(Long no, BizDto bizDto, String userid) {
         Biz biz = bizRepository.findById(no)
                 .orElseThrow(() -> new EntityNotFoundException("비즈니스 게시글을 찾을 수 없습니다: " + no));
@@ -65,7 +65,7 @@ public class BizService {
         return BizDto.fromEntity(bizRepository.save(biz));
     }
 
-    // ✅ 게시글 삭제 (등록한 사용자만 가능)
+    // 게시글 삭제
     public void deleteBiz(Long no, String userid) {
         Biz biz = bizRepository.findById(no)
                 .orElseThrow(() -> new EntityNotFoundException("비즈니스 게시글을 찾을 수 없습니다: " + no));
@@ -74,6 +74,7 @@ public class BizService {
             throw new IllegalStateException("이 게시글을 삭제할 권한이 없습니다.");
         }
 
+        favoriteRepository.deleteByTargetIdAndTargetType(no, FavoriteType.BIZ); // 🧹 찜 먼저 삭제
         bizRepository.delete(biz);
     }
 }

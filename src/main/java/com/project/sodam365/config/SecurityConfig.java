@@ -68,7 +68,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/bookmark/mapped").authenticated()
                         .requestMatchers("/api/mypage/posts").authenticated()
                         .requestMatchers("/api/main/save-recent").authenticated()
-
+                        .requestMatchers("/api/users/normal/**").authenticated()
+                        .requestMatchers("/api/users/business/**").authenticated()
+                        .requestMatchers("/api/search/all").permitAll()
+                        .requestMatchers("/email/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // 🔥 JWT 필터 적용

@@ -25,7 +25,7 @@ public class Product extends BaseTimeEntity { // ✅ `BaseTimeEntity`에서 상�
     @Column(length = 50, nullable = false)
     private String p_contents;
 
-    @Column(length = 100, nullable = false)
+    @Column(length = 1000, nullable = false)
     private String p_link;
 
     @Column(nullable = false)

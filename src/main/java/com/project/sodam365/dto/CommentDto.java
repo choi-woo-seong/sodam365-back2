@@ -22,10 +22,18 @@ public class CommentDto {
     private LocalDateTime createdAt;
 
     public static CommentDto fromEntity(Comment comment) {
+        String authorName = null;
+
+        if (comment.getUser() != null) {
+            authorName = comment.getUser().getName(); // ✅ User 이름
+        } else if (comment.getNuser() != null) {
+            authorName = comment.getNuser().getNName(); // ✅ Nuser 이름
+        }
+
         return CommentDto.builder()
                 .id(comment.getId())
                 .c_comment(comment.getC_comment())
-                .authorName(comment.getAuthorName())
+                .authorName(authorName)
                 .authorType(comment.getAuthorType())
                 .communityId(comment.getCommunity().getId())
                 .createdAt(comment.getCreatedAt())
@@ -35,7 +43,7 @@ public class CommentDto {
     public Comment toEntity(User user, Nuser nuser, Community community) {
         return Comment.builder()
                 .c_comment(this.c_comment)
-                .authorName(user != null ? user.getName() : nuser.getNName())
+                .authorName(user != null ? user.getUserid() : nuser.getNUserid())
                 .authorType(user != null ? "USER" : "NUSER")
                 .user(user)
                 .nuser(nuser)

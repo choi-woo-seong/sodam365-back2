@@ -41,7 +41,15 @@ public class ProductController {
     @GetMapping("/productDetail/{no}")
     public ResponseEntity<ProductDto> getProductByNo(@PathVariable Long no) {
         return ResponseEntity.ok(productService.getProductByNo(no));
+
     }
+
+    // 상품 상세 조회
+//    @GetMapping("/productDetail/{no}")
+//    public ResponseEntity<ProductDto> getProduct(@PathVariable Long productId) {
+//        ProductDto productDto = productService.getProductByNo(productId);
+//        return ResponseEntity.ok(productDto); // ✅ DTO로 응답
+//    }
 
     // ✅ 상품 수정 (JWT 인증 적용, 등록한 사용자만 가능)
     @PutMapping("/productUpdate/{no}")
@@ -70,4 +78,7 @@ public class ProductController {
 
         return ResponseEntity.noContent().build(); // ✅ 성공 시 204 No Content 반환
     }
+
+
+
 }

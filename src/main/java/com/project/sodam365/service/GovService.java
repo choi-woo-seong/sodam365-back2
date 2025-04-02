@@ -22,6 +22,7 @@ import java.util.List;
 public class GovService {
 
     private final GovRepository govRepository;
+    private final com.project.sodam365.repository.FavoriteRepository favoriteRepository;
 
     public void fetchAndSaveGovData() {
         try {
@@ -86,6 +87,8 @@ public class GovService {
     }
 
     public List<Gov> getAllGovData() {
+        // 정부지원 데이터는 삭제 기능이 없지만, 찜에서 삭제할 수 있게 대비
+        // favoriteRepository.deleteByTargetIdAndTargetType(..., FavoriteType.GOV);
         return govRepository.findAll();
     }
 

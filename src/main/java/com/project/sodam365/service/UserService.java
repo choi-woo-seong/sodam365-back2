@@ -60,20 +60,20 @@ public class UserService {
     }
 
     public void createNuser(NuserDto dto) {
-        if (dto.getN_password() == null || dto.getN_password().trim().isEmpty()) {
+        if (dto.getPassword() == null || dto.getPassword().trim().isEmpty()) {
             throw new IllegalArgumentException("Password cannot be null or empty");
         }
 
-        String encryptedPassword = passwordEncoder.encode(dto.getN_password());
+        String encryptedPassword = passwordEncoder.encode(dto.getPassword());
 
         // DTO → 엔티티 변환
         Nuser user = Nuser.builder()
                 .nUserid(dto.getN_userid())
                 .nPassword(encryptedPassword)
-                .nName(dto.getN_name())
-                .nEmail(dto.getN_email())
+                .nName(dto.getName())
+                .nEmail(dto.getEmail())
                 .address(dto.getAddress())
-                .nPhone1(dto.getN_phone1())
+                .nPhone1(dto.getPhone1())
                 .build();
 
         nuserRepository.save(user);

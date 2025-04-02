@@ -18,5 +18,7 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
 
     Optional<Favorite> findByUserAndTargetIdAndTargetType(User user, Long targetId, FavoriteType targetType);
     Optional<Favorite> findByNuserAndTargetIdAndTargetType(Nuser nuser, Long targetId, FavoriteType targetType);
+
+    void deleteByTargetIdAndTargetType(Long no, FavoriteType favoriteType);
 }
 

@@ -36,6 +36,7 @@ public class Question extends BaseTimeEntity {
 
     @JsonIgnore
     @OneToOne(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    @org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
     private Answer answer;
 
     @Column(nullable = false)

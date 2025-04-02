@@ -23,7 +23,7 @@ public class Biz extends BaseTimeEntity{
     @Column(length = 20)
     private String b_price;
 
-    @Column(length = 100, nullable = false)
+    @Column(length = 1000, nullable = false)
     private String b_link;
 
     @ManyToOne

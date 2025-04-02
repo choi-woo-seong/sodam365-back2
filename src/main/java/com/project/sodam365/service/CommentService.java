@@ -2,6 +2,8 @@ package com.project.sodam365.service;
 
 import com.project.sodam365.dto.CommentDto;
 import com.project.sodam365.entity.*;
+import com.project.sodam365.exception.CommentNotFoundException;
+import com.project.sodam365.exception.UnauthorizedAccessException;
 import com.project.sodam365.repository.*;
 import com.project.sodam365.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +27,7 @@ public class CommentService {
         User user = userRepository.findById(userId).orElse(null);
         Nuser nuser = nuserRepository.findById(userId).orElse(null);
         Community community = communityRepository.findById(dto.getCommunityId())
-                .orElseThrow(() -> new RuntimeException("게시글 없음"));
+                .orElseThrow(() -> new RuntimeException("게시글이 없습니다."));
 
         Comment comment = dto.toEntity(user, nuser, community);
         return CommentDto.fromEntity(commentRepository.save(comment));
@@ -43,10 +45,14 @@ public class CommentService {
         boolean isAdmin = jwtUtil.isAdmin(token);
 
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("댓글 없음"));
+                .orElseThrow(() -> new CommentNotFoundException("댓글이 없습니다."));
 
-        if (!comment.getAuthorName().equals(userId) && !isAdmin)
-            throw new RuntimeException("수정 권한 없음");
+        boolean isOwner = (comment.getUser() != null && comment.getUser().getUserid().equals(userId)) ||
+                (comment.getNuser() != null && comment.getNuser().getNUserid().equals(userId));
+
+        if (!isOwner && !isAdmin) {
+            throw new UnauthorizedAccessException("댓글 수정 권한이 없습니다.");
+        }
 
         comment.setC_comment(dto.getC_comment());
         return CommentDto.fromEntity(commentRepository.save(comment));
@@ -57,10 +63,14 @@ public class CommentService {
         boolean isAdmin = jwtUtil.isAdmin(token);
 
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("댓글 없음"));
+                .orElseThrow(() -> new CommentNotFoundException("댓글이 없습니다."));
 
-        if (!comment.getAuthorName().equals(userId) && !isAdmin)
+        boolean isOwner = (comment.getUser() != null && comment.getUser().getUserid().equals(userId)) ||
+                (comment.getNuser() != null && comment.getNuser().getNUserid().equals(userId));
+
+        if (!isOwner && !isAdmin) {
             throw new RuntimeException("삭제 권한 없음");
+        }
 
         commentRepository.delete(comment);
     }

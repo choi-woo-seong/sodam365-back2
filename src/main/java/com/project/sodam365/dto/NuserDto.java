@@ -13,23 +13,23 @@ import lombok.NoArgsConstructor;
 @Builder
 public class NuserDto {
     private String n_userid;
-    private String n_password;
-    private String n_name;
+    private String password;
+    private String name;
     private String address;
-    private String n_email;
-    private String n_phone1;
-    private String n_phone2;
+    private String email;
+    private String phone1;
+    private String phone2;
 
     // User 엔티티 → UserDto 변환
     public static NuserDto fromUserEntity(Nuser user) {
         return NuserDto.builder()
                 .n_userid(user.getNUserid())
-                .n_password(user.getNPassword())
-                .n_name(user.getNName())
-                .n_email(user.getNEmail())
+                .password(user.getNPassword())
+                .name(user.getNName())
+                .email(user.getNEmail())
                 .address(user.getAddress())
-                .n_phone1(user.getNPhone1())
-                .n_phone2(user.getNPhone2())
+                .phone1(user.getNPhone1())
+                .phone2(user.getNPhone2())
                 .build();
     }
 
@@ -37,12 +37,12 @@ public class NuserDto {
     public static Nuser fromUserDto(NuserDto userDto) {
         return Nuser.builder()
                 .nUserid(userDto.getN_userid())
-                .nPassword(userDto.getN_password())
-                .nName(userDto.getN_name())
-                .nEmail(userDto.getN_email())
+                .nPassword(userDto.getPassword())
+                .nName(userDto.getName())
+                .nEmail(userDto.getEmail())
                 .address(userDto.getAddress())
-                .nPhone1(userDto.getN_phone1())
-                .nPhone2(userDto.getN_phone2())
+                .nPhone1(userDto.getPhone1())
+                .nPhone2(userDto.getPhone2())
                 .build();
     }
 }

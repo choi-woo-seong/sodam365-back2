@@ -19,6 +19,8 @@ public class ProductDto {
     private LocalDateTime createdAt;
     private String username; // 상품을 등록한 사용자의 이름
     private String userid;   // 상품을 등록한 비즈니스 사용자 ID
+    private String ownerloc; // 🧭 길찾기용 유저 주소
+
 
     // ✅ Entity → DTO 변환 메서드
     public static ProductDto fromEntity(Product product) {
@@ -31,6 +33,7 @@ public class ProductDto {
                 .createdAt(product.getCreatedAt()) // BaseTimeEntity 상속된 createdAt 사용
                 .username(product.getUser().getName()) // User 엔티티에서 가져옴
                 .userid(product.getUser().getUserid()) // User 엔티티에서 가져옴
+                .ownerloc(product.getUser().getOwnerloc())
                 .build();
     }
 }
