@@ -41,6 +41,11 @@ jobs:
           key: ${{ secrets.AWS_KEY }}
           script: |
             sudo timedatectl set-timezone Asia/Seoul
+            echo "기존 컨테이너 중지 및 삭제"
+            docker-compose down --remove-orphans || true
+            echo "도커 이미지 및 네트워크 정리"
+            docker system prune -af || true
+
             docker pull ${{ secrets.DOCKER_USER_NAME }}/${{ secrets.DOCKER_IMAGE_NAME }}-back
             docker-compose down --remove-orphans
             docker-compose up -d --build
