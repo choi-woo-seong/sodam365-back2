@@ -9,14 +9,6 @@ spring:
     url: jdbc:mysql://192.168.0.84:3306/sodamdb
     username: user1
     password: 1111
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
-    properties:
-      mail.smtp.auth: true
-      mail.smtp.starttls.enable: true
   sql:
     init:
       mode: always

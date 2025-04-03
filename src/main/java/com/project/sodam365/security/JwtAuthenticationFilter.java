@@ -39,7 +39,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 uri.startsWith("/api/notice/searchAll") ||
                 uri.startsWith("/api/gov/fetch") ||
                 uri.startsWith("/api/question/searchAll") ||
-                uri.startsWith("/email/") ||
                 uri.startsWith("/auth/")) {
 
             filterChain.doFilter(request, response);
