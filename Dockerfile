@@ -6,4 +6,4 @@ COPY src/main/resources/application.yml application.yml
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar", "--spring.config.location=classpath:/application.yml,file:./application.yml"]
