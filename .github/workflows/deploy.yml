@@ -6,28 +6,43 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest # 작업이 실행될 환경
+    runs-on: ubuntu-latest
     steps:
       - name: 체크아웃
         uses: actions/checkout@v3
+
       - name: JDK 17 사용
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
+
       - name: Gradle Wrapper 실행 권한 추가
         run: chmod +x gradlew
+
       - name: Gradle로 빌드(CI)
         run: ./gradlew build -x test
+
+      # ✅ 여기 추가: application.yml 존재 및 내용 확인
+      - name: 🔍 application.yml 존재 확인
+        run: |
+          echo "=== application.yml 존재 확인 ==="
+          ls -al src/main/resources/
+          echo "--- 내용 ---"
+          cat src/main/resources/application.yml
+
       - name: 도커허브에 로그인
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USER_NAME }}
           password: ${{ secrets.DOCKER_USER_PW }}
+
       - name: 이미지 빌드
         run: docker build -t ${{ secrets.DOCKER_USER_NAME }}/${{ secrets.DOCKER_IMAGE_NAME }}-back:latest .
+
       - name: 도커허브에 이미지 푸시
         run: docker push ${{ secrets.DOCKER_USER_NAME }}/${{ secrets.DOCKER_IMAGE_NAME }}-back
+
       - name: AWS EC2에 ssh 접속 후 배포
         uses: appleboy/ssh-action@master
         with:
