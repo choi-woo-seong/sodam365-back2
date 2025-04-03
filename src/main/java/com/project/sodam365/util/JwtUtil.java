@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -16,32 +17,27 @@ public class JwtUtil {
     private final SecretKey SECRET_KEY;
     private final long EXPIRATION_TIME;
 
-    public JwtUtil() {
-        String secretEnv = System.getenv("JWT_SECRET");
-        String expirationEnv = System.getenv("JWT_EXPIRATION");
-
-        if (secretEnv == null || expirationEnv == null) {
-            throw new IllegalArgumentException("환경변수 JWT_SECRET 또는 JWT_EXPIRATION이 설정되지 않았습니다.");
-        }
-
-        this.SECRET_KEY = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretEnv));
-        this.EXPIRATION_TIME = Long.parseLong(expirationEnv);
+    public JwtUtil(@Value("${jwt.secret}") String secret, @Value("${jwt.expiration}") long expiration) {
+        this.SECRET_KEY = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secret));
+        this.EXPIRATION_TIME = expiration;
     }
 
     public String generateToken(String id, String role, String name) {
-        if ("admin".equals(id)) {
+        // 🔥 여기서 "admin"인지 체크하고, role 값을 "admin"으로 올바르게 설정
+        if ("admin".equals(id)) {  // userId가 "admin"이면 role을 강제로 "admin"으로 설정
             role = "admin";
         }
 
         return Jwts.builder()
                 .setSubject(id)
                 .claim("role", role)
-                .claim("name", name)
+                .claim("name", name) // 🔥 이제 문제 없음!
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SECRET_KEY)
                 .compact();
     }
+
 
     public boolean validateToken(String token) {
         try {
@@ -63,39 +59,74 @@ public class JwtUtil {
                 .getBody();
     }
 
+    // 🔹 JWT에서 `userid` 추출 (Bearer 자동 제거)
     public String extractUsername(String token) {
         if (token.startsWith("Bearer ")) {
-            token = token.substring(7);
+            token = token.substring(7); // "Bearer " 제거
         }
 
-        return getClaimsFromToken(token).getSubject();
+        return Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject(); // ✅ 토큰의 Subject에서 `userid` 반환
     }
-
+    // 이름 뽑아내기
     public String extractName(String token) {
         if (token.startsWith("Bearer ")) {
             token = token.substring(7);
         }
 
-        return getClaimsFromToken(token).get("name", String.class);
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("name", String.class); // 🔥 name 필드 추출
     }
 
+
+    // 🔹 관리자(`admin`) 계정 여부 확인
     public boolean isAdmin(String token) {
-        return "admin".equals(getUserRole(token));
-    }
-
-    public String getUserRole(String token) {
         if (token.startsWith("Bearer ")) {
-            token = token.substring(7);
+            token = token.substring(7); // "Bearer " 제거
         }
 
-        return getClaimsFromToken(token).get("role", String.class);
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        String role = claims.get("role", String.class); // role 값 가져오기
+        return "admin".equals(getUserRole(token)); // ✅ role이 "admin"이면 true, 아니면 false
     }
 
+    // 🔹 JWT에서 `role` 값 추출
+    public String getUserRole(String token) {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7); // "Bearer " 제거
+        }
+
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("role", String.class); // 🔹 role 값 반환
+    }
+
+    // 🔹 user / nuser 구분
     public String extractUserType(String token) {
-        return getUserRole(token);
+        return getUserRole(token); // "user", "nuser", "admin" 중 하나
     }
 
     public String extractUserId(String token) {
-        return extractUsername(token);
+        return extractUsername(token); // subject 에 저장된 id 그대로
     }
+
 }
+
