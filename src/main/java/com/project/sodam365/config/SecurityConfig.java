@@ -36,7 +36,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // 🔥 CSRF 보호 비활성화 (API 서버에서는 필요 없음)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 🔥 세션 사용 안 함 (JWT 기반 인증)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll() // 🔥 로그인 & 회원가입 엔드포인트는 인증 없이 접근 가능
+                        .requestMatchers("/api/auth/**").permitAll() // 🔥 로그인 & 회원가입 엔드포인트는 인증 없이 접근 가능
                         .requestMatchers("/api/products/searchAll").permitAll() // ✅ 상품 조회 API 허용
                         .requestMatchers(HttpMethod.POST, "/api/products").authenticated() // 상품 등록은 인증 필요
                         .requestMatchers("/api/users/check-duplicate2").permitAll() // ✅ 중복 확인 API 허용
@@ -49,7 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/biz/businessDetail/**").permitAll() //특정 비즈니스 조회
                         .requestMatchers("/api/community/searchAll").permitAll() //비즈니스 전체 조회
                         .requestMatchers("/api/community/communityDetail/**").permitAll() //비즈니스 특정 조회
-                        .requestMatchers("/community/create", "/community/update/**", "/community/delete/**").authenticated() // 🔐 인증 필요
+                        .requestMatchers("/api/community/create", "/api/community/update/**", "/api/community/delete/**").authenticated() // 🔐 인증 필요
                         .requestMatchers("/api/comment/byCommunity/**").permitAll()
                         .requestMatchers("/api/comment/create", "/api/comment/update/**", "/api/comment/delete/**").authenticated()
                         .requestMatchers("/api/notice/create", "/api/notice/update", "/api/notice/delete").authenticated()
