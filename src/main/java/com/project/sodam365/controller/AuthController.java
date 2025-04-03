@@ -20,7 +20,7 @@ import java.util.Optional;
 @CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     private final JwtUtil jwtUtil;

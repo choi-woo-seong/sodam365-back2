@@ -20,7 +20,7 @@ public class EmailVerificationController {
     private final EmailVerificationService emailVerificationService;
 
     // 인증 코드 요청
-    @PostMapping("/send-code")
+    @PostMapping("/api/send-code")
     public ResponseEntity<?> sendCode(@RequestBody Map<String, String> request) {
         String email = request.get("email");
         if (email == null || !email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$")) {
