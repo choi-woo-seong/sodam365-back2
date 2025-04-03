@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import com.project.sodam365.service.EmailVerificationService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,19 +26,11 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final NuserRepository nuserRepository;
     private final UserRepository userRepository;
-    private final EmailVerificationService emailVerificationService;
 
     // 🔹 일반 회원 가입
     @PostMapping("/register/nuser")
     public ResponseEntity<Map<String, Object>> registerNuser(@RequestBody NuserDto nuserDto) {
         Map<String, Object> response = new HashMap<>();
-
-        // ✅ 이메일 인증 여부 확인
-        if (!emailVerificationService.isEmailVerified(nuserDto.getEmail())) {
-            response.put("success", false);
-            response.put("error", "이메일 인증을 진행해주십시오.");
-            return ResponseEntity.status(403).body(response);
-        }
 
         if (nuserDto.getPassword() == null || nuserDto.getPassword().isBlank()) {
             response.put("success", false);
@@ -75,13 +66,6 @@ public class AuthController {
     @PostMapping("/register/buser")
     public ResponseEntity<Map<String, Object>> registerBuser(@RequestBody User user) {
         Map<String, Object> response = new HashMap<>();
-
-        // ✅ 이메일 인증 여부 확인
-        if (!emailVerificationService.isEmailVerified(user.getEmail())) {
-            response.put("success", false);
-            response.put("error", "이메일 인증을 진행해주십시오.");
-            return ResponseEntity.status(403).body(response);
-        }
 
         if (userRepository.findByUserid(user.getUserid()).isPresent()) {
             response.put("success", false);
